@@ -70,7 +70,7 @@ public class SecondFragment extends Fragment {
         totalCredit+=creditValue;
         double cgpa=totalCreditAndGpa/totalCredit;
         cgpaTV.setText(String.format("CGPA: %.2f",cgpa));
-        ///diponkar  sahs
+        ///diponkar  sahs gghytg
 
         //Course course=new Course(gpaValue,creditValue,controller.getCurrentsemister().getId());
         Course course=new Course(gpaValue,creditValue, controller.getCurrentsemister().getId());
