@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import com.example.myapplication.database.CourseDao;
 import com.example.myapplication.database.GradeDatabase;
 import com.example.myapplication.database.SemisterDao;
+import com.example.myapplication.model.Course;
 import com.example.myapplication.model.Semister;
 
 import java.util.ArrayList;
@@ -27,6 +28,9 @@ public class GradeRepository {
     }
     public void InsertSemister(Semister semister){
         new InsertTask(semisterDao).execute(semister);
+    }
+    public void InsertCourse(List<Course>myCourse){
+        new CourseListTask(courseDao).execute(myCourse);
     }
     public List<Semister> GetAllSemister(){
         try {
@@ -55,6 +59,8 @@ public class GradeRepository {
             return null;
         }
     }
+
+
     private static  class GetAllSemisterTask extends AsyncTask<Void,Void, List<Semister>>{
         SemisterDao dao;
         GetAllSemisterTask(SemisterDao semisterDao){
@@ -64,6 +70,18 @@ public class GradeRepository {
         @Override
         protected List<Semister> doInBackground(Void... voids) {
             return dao.GetAllSemister();
+        }
+    }
+    private static class CourseListTask extends AsyncTask<List<Course>,Void,Void>{
+        CourseDao dao;
+        CourseListTask(CourseDao courseDao){
+            dao=courseDao;
+
+        }
+        @Override
+        protected Void doInBackground(List<Course>... lists) {
+            dao.InsertCourseList(lists[0]);
+            return null;
         }
     }
 }
