@@ -55,6 +55,10 @@ public class GradeRepository {
         }
         return mySemisterList;
     }
+    public void deleteCourse(Course course){
+        new deleteCouseTask(courseDao).execute(course);
+
+    }
 
 
 
@@ -105,6 +109,17 @@ public class GradeRepository {
         protected List<Course> doInBackground(Integer... integers) {
 
             return dao.GetCourseSemister(integers[0]);
+        }
+    }
+    private static class deleteCouseTask extends AsyncTask<Course,Void,Void>{
+        CourseDao dao;
+        deleteCouseTask(CourseDao courseDao){
+            dao=courseDao;
+        }
+        @Override
+        protected Void doInBackground(Course... courses) {
+           dao.DeleteCourse(courses[0]);
+            return null;
         }
     }
 }

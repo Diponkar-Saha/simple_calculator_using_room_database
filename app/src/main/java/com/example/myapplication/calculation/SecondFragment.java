@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -43,19 +44,41 @@ public class SecondFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
        view=inflater.inflate(R.layout.fragment_second, container, false);
+        cgpaTV=view.findViewById(R.id.textView3);
        controller=DataController.getInstance();
        repository=new GradeRepository(getActivity().getApplication());
        myCourse=repository.GetCourseById(controller.getCurrentsemister().getId());
+       if(myCourse.size()>0){
+           CalculateCGPS(myCourse);
+       }
        creditET=view.findViewById(R.id.editTextTextPersonName);
        gpaET=view.findViewById(R.id.editTextTextPersonName2);
        addButton=view.findViewById(R.id.button);
-       cgpaTV=view.findViewById(R.id.textView3);
+
        recyclerView=view.findViewById(R.id.courseRecyclerView);
        recyclerView.setHasFixedSize(true);
        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
        adapter=new CourseRecyclearAdapter(myCourse);
        recyclerView.setAdapter(adapter);
        floatingActionButton=view.findViewById(R.id.saveButton);
+
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT|
+                ItemTouchHelper.RIGHT) { /* @Override
+           public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+               return 0;
+           }*/
+
+           @Override
+           public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+               return false;
+           }
+
+           @Override
+           public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+              // Delete(viewHolder.getAdapterPosition());
+
+           }
+       }).attachToRecyclerView(recyclerView);
 
        addButton.setOnClickListener(new View.OnClickListener() {
            @Override
@@ -103,6 +126,19 @@ public class SecondFragment extends Fragment {
        Toast.makeText(getActivity(),controller.getCurrentsemister().getSemisterName(),Toast.LENGTH_SHORT).show();
         return view;
     }
+
+    private void CalculateCGPS(List<Course> myCourse) {
+        for(int i=0;i<myCourse.size();i++){
+            Course temp=myCourse.get(i);
+            totalCredit+=temp.getCourseCredit();
+            totalCreditAndGpa+=(temp.getCourseCredit()*temp.getCourseGpa());
+
+
+        }
+        double cgpa=totalCreditAndGpa/totalCredit;
+        cgpaTV.setText(String.format("CGPA: %.2f",cgpa));
+    }
+
     private void Calculate(String gpa, String credit){
         double gpaValue=Double.parseDouble(gpa);
         double creditValue=Double.parseDouble(credit);
@@ -118,10 +154,13 @@ public class SecondFragment extends Fragment {
         myCourse.add(course);
         adapter.notifyDataSetChanged();
 
-
-
+    }
+    private  void Delete(int position ){
+        Course course = myCourse.get(position);
+        repository.deleteCourse(course);
+        myCourse.remove(course);
+        adapter.notifyDataSetChanged();
 
     }
-
 
 }
