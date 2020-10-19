@@ -19,10 +19,12 @@ public class GradeRepository {
     private CourseDao courseDao;
     private SemisterDao semisterDao;
     List<Semister>mySemisterList=new ArrayList<>();
+    List<Course> allcourses=new ArrayList<>();
     public GradeRepository(Application application){
         GradeDatabase db=GradeDatabase.getdatabase(application);
         courseDao=db.courseDao();
         semisterDao=db.semisterDao();
+
        // mySemisterList=semisterDao.GetAllSemister();
 
     }
@@ -31,6 +33,17 @@ public class GradeRepository {
     }
     public void InsertCourse(List<Course>myCourse){
         new CourseListTask(courseDao).execute(myCourse);
+    }
+    public List<Course> GetCourseById(int semesterId){
+
+        try {
+            allcourses=new GetCourseListTask(courseDao).execute((semesterId)).get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return allcourses;
     }
     public List<Semister> GetAllSemister(){
         try {
@@ -59,8 +72,6 @@ public class GradeRepository {
             return null;
         }
     }
-
-
     private static  class GetAllSemisterTask extends AsyncTask<Void,Void, List<Semister>>{
         SemisterDao dao;
         GetAllSemisterTask(SemisterDao semisterDao){
@@ -82,6 +93,18 @@ public class GradeRepository {
         protected Void doInBackground(List<Course>... lists) {
             dao.InsertCourseList(lists[0]);
             return null;
+        }
+    }
+    private  static  class  GetCourseListTask extends AsyncTask<Integer,Void,List<Course>>{
+        CourseDao dao;
+        GetCourseListTask(CourseDao courseDao){
+            dao=courseDao;
+        }
+
+        @Override
+        protected List<Course> doInBackground(Integer... integers) {
+
+            return dao.GetCourseSemister(integers[0]);
         }
     }
 }

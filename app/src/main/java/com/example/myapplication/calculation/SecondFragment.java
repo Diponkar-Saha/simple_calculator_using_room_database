@@ -45,6 +45,7 @@ public class SecondFragment extends Fragment {
        view=inflater.inflate(R.layout.fragment_second, container, false);
        controller=DataController.getInstance();
        repository=new GradeRepository(getActivity().getApplication());
+       myCourse=repository.GetCourseById(controller.getCurrentsemister().getId());
        creditET=view.findViewById(R.id.editTextTextPersonName);
        gpaET=view.findViewById(R.id.editTextTextPersonName2);
        addButton=view.findViewById(R.id.button);
@@ -116,6 +117,8 @@ public class SecondFragment extends Fragment {
         Course course=new Course(gpaValue,creditValue, controller.getCurrentsemister().getId());
         myCourse.add(course);
         adapter.notifyDataSetChanged();
+
+
 
 
     }
